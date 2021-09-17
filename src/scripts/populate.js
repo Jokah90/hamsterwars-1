@@ -11,6 +11,7 @@ populate();
 async function populate() {
 
     data.forEach(object => {
+
         let newObject = {
             ...object,
 
