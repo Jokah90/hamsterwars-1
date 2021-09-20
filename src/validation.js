@@ -1,6 +1,6 @@
-// function isProperIndex(index, maxIndex) {
-//     return index >= 0 && index < maxIndex
-// }
+function isProperIndex(index, maxIndex) {
+    return index >= 0 && index < maxIndex
+}
 
 function isHamsterObject(maybe) {
     if ((typeof maybe) !== 'object') {
@@ -27,4 +27,4 @@ function isHamsterObject(maybe) {
     return true
 }
 
-module.exports = { isHamsterObject }
+module.exports = { isHamsterObject, isProperIndex }

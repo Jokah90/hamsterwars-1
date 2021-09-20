@@ -1,6 +1,6 @@
-const { connect } = require('../database.js')
+const { connect } = require('../database.js');
 const db = connect()
-const data = require('../data.json')
+const data = require('../api/data.json')
 
 const HAMSTERS = 'hamsters'
 

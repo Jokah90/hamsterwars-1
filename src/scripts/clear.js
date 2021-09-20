@@ -7,14 +7,14 @@ clear();
 
 async function clear() {
     const usersRef = db.collection(HAMSTERS)
-    const usersSnapshot = await usersRef.get()
+    const docSnapshot = await usersRef.get();
 
-    if (usersSnapshot.empty) {
-        return
+    if (docSnapshot.empty) {
+      return;
     }
 
-    usersSnapshot.forEach(docRef => {
-        usersRef.doc(docRef.id).delete()
-        // Vi behöver inte await - inget att vänta på
-    })
+    docSnapshot.forEach((docRef) => {
+      usersRef.doc(docRef.id).delete();
+      // Vi behöver inte await - inget att vänta på
+    });
 }
