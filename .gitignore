@@ -1,4 +1,4 @@
-Node_Modules/
+node_modules/
 secrets/
 .DS_Store
 .env

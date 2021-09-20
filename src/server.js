@@ -1,7 +1,7 @@
 // importera paket
 const express = require('express')
 const app = express()
-const router = require('./src/routes/router.js')
+const router = require('./routes/router.js')
 const cors = require('cors')
 
 
@@ -22,11 +22,9 @@ app.use((req, res, next) => {
 
 app.use('/web', express.static(__dirname + '/../frontend'))
 
-app.get('/', (req, res) => {
-    console.log('The server is working!')
-})
+
 // routes / endpoints
-app.use('/', router)
+app.use('/hamsters', router)
 
 // starta servern
 app.listen(PORT, () => {

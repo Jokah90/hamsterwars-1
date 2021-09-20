@@ -3,12 +3,13 @@ const db = connect()
 
 const HAMSTERS = 'hamsters'
 
+
 addOne();
 
-
-
 async function addOne() {
+
     console.log('Add a new document...');
+
     const object = {
         "name": "Kurt",
         "age": 1,

@@ -8,11 +8,9 @@ updateOne();
 
 async function updateOne(id) {
     console.log('Update a document...');
-    const docId = id || 'zeX3RdeUK0WoG8hxNj3C'
+    const docId = id || '0AGSfrcjiyFvug7sU01V'
 
-    const updates = {
-        name: 'Harry Persson'
-    }
+
 
     const settings = { merge: true }
     await db.collection(HAMSTERS).doc(docId).set(updates, settings)
