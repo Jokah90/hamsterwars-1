@@ -11,17 +11,17 @@ function isHamsterObject(maybe) {
 
     let keys = Object.keys(maybe)
     if (
-        !keys.includes('age') ||
-        !keys.includes('imgName') ||
-        !keys.includes('loves') ||
-        !keys.includes('favFood') ||
-        !keys.includes('wins') ||
-        !keys.includes('defeats') ||
-        !keys.includes('games') ||
-        !keys.includes('name') ||
-        !keys.includes('id')) {
-        console.log('isHamsterObject1', maybe)
-        return false
+      !keys.includes("age") ||
+      !keys.includes("imgName") ||
+      !keys.includes("loves") ||
+      !keys.includes("favFood") ||
+      !keys.includes("wins") ||
+      !keys.includes("defeats") ||
+      !keys.includes("games") ||
+      !keys.includes("name")
+    ) {
+      console.log("isHamsterObject1", maybe);
+      return false;
     }
     console.log('isHamsterObject2')
     return true

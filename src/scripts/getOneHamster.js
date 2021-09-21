@@ -12,7 +12,7 @@ getOne();
 // Hämta hamster från databasen
 async function getOne(id) {
     console.log('Looking for one hamster...');
-    const docId = id || 'av1Wg0zAPGvWfi9JzzJQ'
+    const docId = id || "NG1ATK9p6UthKsIyy4lt";
 
     const docSnapshot = await db.collection(HAMSTERS).doc(docId).get()
 

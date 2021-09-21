@@ -1,19 +1,19 @@
-// const { connect } = require('../database.js')
-// const db = connect()
+const { connect } = require("../database.js");
+const db = connect();
 
-// const HAMSTERS = "hamsters";
+const HAMSTERS = "hamsters";
 
-// deleteOne();
+deleteOne();
 
-// async function deleteOne(id) {
-//   console.log("Deleting a document...");
-//   const docId = id || "0ZuOZFgN41nuonvIAiXd";
+async function deleteOne(id) {
+  console.log("Deleting a document...");
+  const docId = id || "X90v5YvT8bAQ3PmzmXjU";
 
-//   const docRef = db.collection(HAMSTERS).doc(docId);
-//   const docSnapshot = await docRef.get();
+  const docRef = db.collection(HAMSTERS).doc(docId);
+  const docSnapshot = await docRef.get();
 
-//   if (!docSnapshot.exists) {
-//     return null;
-//   }
-//   docRef.delete();
-// }
+  if (!docSnapshot.exists) {
+    return null;
+  }
+  docRef.delete();
+}

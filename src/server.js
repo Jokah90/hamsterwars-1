@@ -20,7 +20,7 @@ app.use((req, res, next) => {
     next()
 })
 
-app.use('/web', express.static(__dirname + '/../frontend'))
+// app.use('/web', express.static(__dirname + '/../frontend'))
 
 
 // routes / endpoints
