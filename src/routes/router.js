@@ -4,11 +4,11 @@ const database = require("../database.js");
 const connect = database.connect;
 const db = connect();
 const HAMSTERS = "hamsters";
-const { isHamsterObject, isProperIndex } = require("../validation.js");
+const { isHamsterObject, isHamsterChanged } = require("../validation.js");
 
 //    ENDPOINTS    //
 
-// endpoint GET/ ALL 
+// endpoint GET/ ALL
 router.get("/", async (req, res) => {
   let array = await getAll();
   res.send(array);
@@ -16,59 +16,66 @@ router.get("/", async (req, res) => {
 
 // endpoint GET/ RANDOM
 router.get("/random", async (req, res) => {
-  const hamsterArray = await getAllHamsters()
-  let randomHamster = hamsterArray[Math.floor(Math.random()*hamsterArray.length)]
+  const hamsterArray = await getAll();
+  let randomHamster =
+    hamsterArray[Math.floor(Math.random() * hamsterArray.length)];
   res.status(200).send(randomHamster);
-  })
+});
 
 // endpoint GET/ :ID
 router.get("/:id", async (req, res) => {
   const maybeUser = await getOne(req.params.id);
 
   if (!maybeUser) {
-    res.status(400).send("Could not find id");
-    return
+    res.sendStatus(404);
+    return;
+  } else {
+    res.status(200).send(maybeUser);
   }
-  res.send(maybeUser);
 });
 
 // endpoint POST/ ADD NEW :ID
 router.post("/", async (req, res) => {
-  let body = await req.body;
-  if (!isHamsterObject(body)) {
-    res.status(400).send("Bad request");
+  let maybe = req.body;
+  if (!isHamsterObject(maybe)) {
+    res.sendStatus(400);
     return;
   }
-  await addOne(body);
-  res.sendStatus(200);
+  const newHamster = await addOne(maybe);
+  res.status(200).send(newHamster);
 });
 
 // endpoint PUT/ CHANGE OBJECT
 router.put("/:id", async (req, res) => {
-  const maybe = await req.body;
-  let updateHamster = await getOne(req.params.id);
-  if (!updateHamster) {
-    res.sendStatus(404)
-    return
-  }
-  if (!isHamsterObject(req.body)) {
-    res.status(400).send("This is a bad request");
+  const maybe = req.body;
+  if (!isHamsterChanged(maybe)) {
+    res.sendStatus(400);
     return;
   }
-  await updateOne(req.params.id, maybe);
-  res.sendStatus(200);
- 
+
+  const newHamster = await updateOne(req.params.id, maybe);
+  if (!newHamster) {
+    res.sendStatus(404);
+    return;
+  } else {
+    res.sendStatus(200);
+  }
 });
 
 //endpoint DELETE/ :ID
 router.delete("/:id", async (req, res) => {
   let hamsterId = await deleteOne(req.params.id);
-  res.send(200);
+  if (!hamsterId) {
+    res.sendStatus(404);
+    return;
+  } else {
+    res.status(200).send(hamsterId.id);
+  }
 });
 
-// ASYNC FUNCTIONS
+//******************** ASYNC FUNCTIONS ******************************// */
 
-//SCRIPT GET ALL
+// SCRIPT GET ALL
 async function getAll() {
   const docRef = db.collection(HAMSTERS);
   const docSnapshot = await docRef.get();
@@ -86,10 +93,10 @@ async function getAll() {
   return array;
 }
 
-//SCRIPT ASYNC GET:ID
+// //SCRIPT ASYNC GET:ID
 async function getOne(id) {
-  const docId = id;
-  const docSnapshot = await db.collection(HAMSTERS).doc(docId).get();
+  const docRef = db.collection(HAMSTERS).doc(id);
+  const docSnapshot = await docRef.get();
 
   if (docSnapshot.exists) {
     return await docSnapshot.data();
@@ -100,20 +107,26 @@ async function getOne(id) {
 
 //SCRIPT ASYNC POST
 async function addOne(body) {
-  console.log("Add a new document...");
   const docRef = await db.collection(HAMSTERS).add(body);
-  console.log("Added document with the id " + docRef.id);
+  const hamster = { id: docRef.id };
+  return hamster;
 }
 
-//SCRIPT ASYNC PUT
-async function updateOne(id, object) {
-  const docRef = db.collection(HAMSTERS).doc(id);
-  const settings = { merge: true };
+// SCRIPT ASYNC PUT
+async function updateOne(id, body) {
+  const docRef = await db.collection(HAMSTERS).doc(id);
+  const docSnapshot = await docRef.get();
 
-  docRef.set(object, settings);
+  if (docSnapshot.exists) {
+    const settings = { merge: true };
+    const data = await db.collection(HAMSTERS).doc(id).set(body, settings);
+    return data;
+  }
+
+  return false;
 }
 
-//SCRIPT ASYNC DELETE
+// SCRIPT ASYNC DELETE
 async function deleteOne(id) {
   const docId = id || "qFNPMtqJyPdnOy18L75r";
 
@@ -121,13 +134,11 @@ async function deleteOne(id) {
   const docSnapshot = await docRef.get();
 
   if (!docSnapshot.exists) {
-    return null;
+    return false;
   }
   docRef.delete();
+  return docSnapshot;
 }
-// //Script RANDOM
-// const getRandom = async () => {
-//  return randomHamster
-// }
+
 
 module.exports = router;
