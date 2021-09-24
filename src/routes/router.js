@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const database = require("../database.js");
-const connect = database.connect;
-const db = connect();
+const { db } = require("../database.js");
 const HAMSTERS = "hamsters";
 const MATCHES = "matches";
 
@@ -12,13 +10,13 @@ const { isHamsterObject, isHamsterChanged } = require("../validation.js");
 
 // endpoint GET/ ALL
 router.get("/", async (req, res) => {
-  let array = await getAll();
+  let array = await getAll(HAMSTERS);
   res.send(array);
 });
 
 // endpoint GET/ RANDOM
 router.get("/random", async (req, res) => {
-  const hamsterArray = await getAll();
+  const hamsterArray = await getAll(HAMSTERS);
   let randomHamster =
     hamsterArray[Math.floor(Math.random() * hamsterArray.length)];
   res.status(200).send(randomHamster);
@@ -95,8 +93,8 @@ router.delete("/:id", async (req, res) => {
 //******************** ASYNC FUNCTIONS ******************************// */
 
 // SCRIPT GET ALL
-async function getAll() {
-  const docRef = db.collection(HAMSTERS);
+async function getAll(collection) {
+  const docRef = db.collection(collection);
   const docSnapshot = await docRef.get();
 
   if (docSnapshot.empty) {

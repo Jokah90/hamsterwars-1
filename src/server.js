@@ -2,6 +2,7 @@
 const express = require('express')
 const app = express()
 const router = require('./routes/router.js')
+const routerMatches = require('./routes/routesMatches.js')
 const cors = require('cors')
 
 let count = 0;
@@ -27,7 +28,7 @@ app.use((req, res, next) => {
 
 // routes / endpoints
 app.use('/hamsters', router)
-
+app.use('/matches', routerMatches);
 
 // starta servern
 app.listen(PORT, () => {
