@@ -28,6 +28,7 @@ app.use((req, res, next) => {
 // routes / endpoints
 app.use('/hamsters', router)
 
+
 // starta servern
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}.`);

@@ -4,6 +4,8 @@ const database = require("../database.js");
 const connect = database.connect;
 const db = connect();
 const HAMSTERS = "hamsters";
+const MATCHES = "matches";
+
 const { isHamsterObject, isHamsterChanged } = require("../validation.js");
 
 //    ENDPOINTS    //
@@ -22,15 +24,32 @@ router.get("/random", async (req, res) => {
   res.status(200).send(randomHamster);
 });
 
+// endpoint GET/ CUTEST
+router.get("/cutest", async (req, res) => {
+  let winsAndLosers = await cutest();
+  res.status(200).send(winsAndLosers);
+});
+
 // endpoint GET/ :ID
 router.get("/:id", async (req, res) => {
-  const maybeUser = await getOne(req.params.id);
+  try {
+    const maybe = await getOne(req.params.id, HAMSTERS);
+    if (!maybe) {
+      res.sendStatus(404);
+    } else {
+      res.send(maybe);
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
-  if (!maybeUser) {
+router.get("/matches/:id", async (req, res) => {
+  const maybe = await getOne(req.params.id, MATCHES);
+  if (!maybe) {
     res.sendStatus(404);
-    return;
   } else {
-    res.status(200).send(maybeUser);
+    res.send(maybe);
   }
 });
 
@@ -94,15 +113,47 @@ async function getAll() {
 }
 
 // //SCRIPT ASYNC GET:ID
-async function getOne(id) {
-  const docRef = db.collection(HAMSTERS).doc(id);
-  const docSnapshot = await docRef.get();
+async function getOne(id, collection) {
+  const docRef = await db.collection(collection).doc(id).get();
+  // const docSnapshot = await docRef.get();
 
-  if (docSnapshot.exists) {
-    return await docSnapshot.data();
-  } else {
-    return null;
+  if (docRef.exists) {
+    const data = await docRef.data();
+    data.id = docRef.id;
+
+    return data;
   }
+  return false;
+}
+
+async function cutest() {
+  const docSnapshot = await db.collection(HAMSTERS).get();
+
+  let resultArray = [];
+
+  await docSnapshot.forEach(async (docRef) => {
+    const data = await docRef.data();
+    data.id = docRef.id;
+
+    let diffResult = data.wins - data.defeats;
+    let newResult = { id: data.id, diff: diffResult };
+    resultArray.push(newResult);
+  });
+
+  resultArray.sort((a, b) => {
+    return b.diff - a.diff;
+  });
+
+  let topDiff = resultArray.splice(0, 1);
+  let cutest = [];
+
+  for (let i = 0; i < topDiff.length; i++) {
+    let hamster = await db.collection(HAMSTERS).doc(topDiff[i].id).get();
+    let data = hamster.data();
+    cutest.push(data);
+  }
+
+  return cutest;
 }
 
 //SCRIPT ASYNC POST
@@ -128,15 +179,13 @@ async function updateOne(id, body) {
 
 // SCRIPT ASYNC DELETE
 async function deleteOne(id) {
-  const docId = id || "qFNPMtqJyPdnOy18L75r";
-
-  const docRef = db.collection(HAMSTERS).doc(docId);
+  const docRef = await db.collection(HAMSTERS).doc(id);
   const docSnapshot = await docRef.get();
 
   if (!docSnapshot.exists) {
     return false;
   }
-  docRef.delete();
+  await docRef.delete();
   return docSnapshot;
 }
 
